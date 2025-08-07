@@ -1,138 +1,174 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="">
-<meta name="author" content="">
-<title>Login</title>
-<!-- Custom fonts for this template-->
-<link href="/assets/css/aos.css" rel="stylesheet" type="text/css">
+  <meta charset="utf-8">
+  <title>Login | Admin Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Login page for admin">
 
-<link
-href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-rel="stylesheet">
-<!-- Custom styles for this template-->
- <link href="./assets/css/bootstrap.css" rel="stylesheet">
- <link href="./assets/css/main.css" rel="stylesheet">
- <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
- <link rel="stylesheet" href="./assets/css/bootstrap.min.css.map">
- <style>
-  .alert{
-    height: 45px; 
-    padding: 10px;
-  }
- </style>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #4e73df, #1cc88a);
+      min-height: 100vh;
+    }
+    .login-card {
+      border: none;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    .bg-login-image {
+      background: url('https://source.unsplash.com/600x800/?office,technology') center center;
+      background-size: cover;
+      position: relative;
+    }
+    .bg-login-image::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .image-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      z-index: 1;
+      padding: 20px;
+    }
+    .image-text h2 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .image-text p {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+    .form-control-login {
+      border-radius: 0.375rem;
+      box-shadow: none;
+      border: 1px solid #ddd;
+    }
+    .form-control-login:focus {
+      border-color: #1cc88a;
+      box-shadow: 0 0 0 0.1rem rgba(28, 200, 138, 0.25);
+    }
+    .loginformbtn {
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .alert {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
 </head>
-<body class="bg-gradient-primary">
-<div class="container">
-<!-- Outer Row -->
-<div class="row justify-content-center">
-<div class="col-xl-10 col-lg-12 col-md-9">
-<div class="card o-hidden border-0 shadow-lg my-5">
-<div class="card-body p-0">
-<!-- Nested Row within Card Body -->
-<div class="row">
-<div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-<div class="col-lg-6">
-<div class="p-5">
-<div class="text-center">
-<h1 class="h4 text-gray-900 mb-4">Login Portal</h1>
-</div>
 
-<form class="user_login" id="user_login" method="post">
-<div id="login_msg"></div>
+<body>
+  <div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-lg-10">
+        <div class="card login-card" data-aos="zoom-in">
+          <div class="row g-0">
+            <!-- Left Image Section -->
+            <div class="col-lg-6 position-relative d-none d-lg-block bg-login-image">
+              <div class="image-text">
+                <h2>Welcome Admin</h2>
+                <p>Access your dashboard, manage employes</p>
+              </div>
+            </div>
 
-<div class="form-group">
-<input type="email" name="email" class="form-control form-control-login"
-id="email" aria-describedby="emailHelp"
-placeholder="Enter Email Address..." required/>
-<span id="error_email"></span>
-</div></br>
+            <!-- Right Form Section -->
+            <div class="col-lg-6 p-5 bg-white">
+              <div class="text-center mb-4">
+                <h3 class="text-primary fw-bold">Login Portal</h3>
+                <p class="text-muted small">Please enter your credentials</p>
+              </div>
 
-<div class="form-group">
-<input type="password" name="password" class="form-control form-control-login"
-id="password" placeholder="Password" required>
-<span id="error_password"></span>
-</div></br>
+              <form class="user_login" id="user_login" method="post">
+                <div id="login_msg"></div>
 
-<div class="form-group">
-<div class="custom-control custom-checkbox small">
-<input type="checkbox" class="custom-control-input" id="customCheck">
-<label class="custom-control-label" for="customCheck" style="font-size: 15px;">Remember
-Me</label>
-</div>
-</div></br>
+                <div class="form-group mb-3">
+                  <input type="email" name="email" class="form-control form-control-login" id="email" placeholder="Enter Email Address..." required>
+                  <span id="error_email" class="text-danger small"></span>
+                </div>
 
-<button type="button" id="loginbtn" class="btn btn-primary btn-user btn-block loginformbtn">Login</button>
-<hr>
-</form>
-<hr>
+                <div class="form-group mb-3">
+                  <input type="password" name="password" class="form-control form-control-login" id="password" placeholder="Password" required>
+                  <span id="error_password" class="text-danger small"></span>
+                </div>
 
-<div class="text-center">
-<a class="small" href="#">Forgot Password?</a>
-</div>
+                <button type="button" id="loginbtn" class="btn btn-primary w-100 loginformbtn">Login</button>
+              </form>
+              <hr>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="text-center">
-<a class="small" href="./register.php">Create an Account!</a>
-</div>
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init();</script>
 
-</div>
-</div>
-</div>
-</div>
-</div>
+  <!-- Login Logic -->
+  <script>
+    $(document).ready(function(){
+      $('#loginbtn').on('click', function(){
+        var email = $('#email').val();
+        var password = $('#password').val();
+        let valid = true;
 
-</div>
-</div>
-</div>
+        if (!email) {
+          $('#error_email').text('Email is required');
+          valid = false;
+        } else {
+          $('#error_email').text('');
+        }
 
-<!-- Bootstrap core JavaScript-->
+        if (!password) {
+          $('#error_password').text('Password is required');
+          valid = false;
+        } else {
+          $('#error_password').text('');
+        }
+
+        if (valid) {
+          $.ajax({
+            type: 'POST',
+            url: './model/UserLoginModel.php',
+            data: $('#user_login').serialize(),
+            success: function(data) {
+              if (data == 1) {
+                window.location = "./view/index.php";
+              } else {
+                $('#login_msg').html('<div class="alert alert-danger">Email or Password is Incorrect</div>');
+              }
+            }
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-
-
-<script>
-    $(document).ready(function(){
-        $(document).on('click','#loginbtn','#user_login',function(){
-         var email=$('#email').val();
-         var password=$('#password').val();
-
-        if(email ==false )
-          {
-            $('#error_email').html('<span class="text-danger">Email is required</span>');
-          }else{
-            $('#error_email').hide();
-          }
-
-         if (password ==false) 
-          {
-           $('#error_password').html('<span class="text-danger">Password is required</span>');
-          }else{
-            $('#error_password').hide();
-          }
-
-
-       if (email !='' && password !='')
-          {
-             $.ajax({
-                 type:'post',
-                 url:'./model/UserLoginModel.php',
-                 data:$('.user_login').serialize(),
-                 success:function(data)
-                 {
-                    if (data ==1)
-                    {
-                        window.location = "./view/index.php";
-                    }else{
-                        $('#login_msg').html('<div class="alert alert-danger">Email or Password is Incorrect</div>');
-                    }   
-                 }
-             });
-           }
-        });
-    });
-</script>

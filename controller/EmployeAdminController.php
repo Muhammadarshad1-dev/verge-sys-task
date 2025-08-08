@@ -1,7 +1,7 @@
-<?php 
+<?php
 session_start();
-
-class EmployeAdminController {
+class EmployeAdminController
+{
     private $servername = 'localhost';
     private $username = 'root';
     private $pasword = '';
@@ -9,42 +9,90 @@ class EmployeAdminController {
     private $conn;
     private $logFile;
 
-    function __construct() {
+    function __construct()
+    {
         $this->conn = new mysqli($this->servername, $this->username, $this->pasword, $this->dbname);
         $this->logFile = __DIR__ . "/../logs/employees.log"; // Log file path
     }
 
-    private function writeLog($message) {
+    private function writeLog($message)
+    {
         $date = date('Y-m-d H:i:s');
         file_put_contents($this->logFile, "[$date] $message" . PHP_EOL, FILE_APPEND);
     }
 
-    public function AddAdmin($post) {
-        $name = $_POST['employe_name'];
-        $email = $_POST['employe_email'];
-        $department = $_POST['department'];
+    public function AddAdmin($post)
+    {
+        require_once __DIR__ . '/DropboxService.php'; // Corrected path to DropboxService
 
-        $target_dir = "../public/Profiles/";
-        $target_file = $target_dir . basename($_FILES["file"]["name"]);
-        move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+        $name = trim($_POST['employe_name']);
+        $email = trim($_POST['employe_email']);
+        $department = trim($_POST['department']);
+
+        // Basic validation
+        if (empty($name) || empty($email) || empty($department)) {
+            echo '<div class="alert alert-danger">All fields are required.</div>';
+            return;
+        }
+
+        // Check if file was uploaded
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            echo '<div class="alert alert-danger">File upload failed or no file selected.</div>';
+            return;
+        }
+
+        // Check Dropbox authentication
+        if (!isset($_SESSION['dropbox_access_token'])) {
+            $dropbox = new DropboxService();
+            $authUrl = $dropbox->getAuthUrl();
+            echo '<div class="alert alert-warning">Please connect Dropbox: <a href="' . $authUrl . '" target="_blank">Connect Now</a></div>';
+            return;
+        }
+
+        // File path for Dropbox
+        $filePath = $_FILES['file']['tmp_name'];
+        $fileName = $_FILES['file']['name'];
+
+        // Upload to Dropbox
+        try {
+            $dropbox = new DropboxService();
+            $dropboxLink = $dropbox->uploadFile($filePath, $fileName);
+            if (!$dropboxLink) {
+                throw new Exception("Dropbox upload returned empty link.");
+            }
+        } catch (Exception $e) {
+            echo '<div class="alert alert-danger">Dropbox upload failed: ' . $e->getMessage() . '</div>';
+            $this->writeLog("Dropbox upload failed for {$name} ({$email}): " . $e->getMessage());
+            return;
+        }
 
         date_default_timezone_set('Asia/Karachi');
         $date = date('m/d/Y h:i:s a', time());
 
-        $insertAdmin = "INSERT INTO `employes`(`employe_name`, `employe_email`, `employe_dept`,`employe_file`,`date`,`status`) 
-                        VALUES ('{$name}','{$email}','{$department}','{$target_file}','{$date}','1')";
+        // Insert into MySQL using direct query
+        $insertAdmin = "INSERT INTO `employes` (`employe_name`, `employe_email`, `employe_dept`, `employe_file`, `date`, `status`) 
+                    VALUES ('{$this->conn->real_escape_string($name)}', 
+                            '{$this->conn->real_escape_string($email)}', 
+                            '{$this->conn->real_escape_string($department)}', 
+                            '{$this->conn->real_escape_string($dropboxLink)}', 
+                            '{$date}', 
+                            '1')";
+
         $result = $this->conn->query($insertAdmin);
 
         if ($result) {
-            echo '<div class="alert alert-success">Employes Successfully Added</div>';
-            $this->writeLog("Added employee: {$name} ({$email})");
+            echo '<div class="alert alert-success">Employee Successfully Added</div>';
+            $this->writeLog("Added employee: {$name} ({$email}) - File uploaded to Dropbox");
         } else {
-            echo '<div class="alert alert-danger">Error!! Something is wrong try again</div>';
-            $this->writeLog("Failed to add employee: {$name} ({$email}) - " . $this->conn->error);
+            echo '<div class="alert alert-danger">Error!! Could not insert record: ' . $this->conn->error . '</div>';
+            $this->writeLog("MySQL error for {$name}: " . $this->conn->error);
         }
     }
 
-    public function DisplayAllEmploye() {
+
+
+    public function DisplayAllEmploye()
+    {
         $select = "SELECT * FROM `employes`";
         $result = $this->conn->query($select);
         $array = [];
@@ -54,7 +102,8 @@ class EmployeAdminController {
         return $array;
     }
 
-    public function EditEmployeRecord($post) {
+    public function EditEmployeRecord($post)
+    {
         $Eaid = $_POST['Eaid'];
         $select = "SELECT * FROM `employes` WHERE `id`='{$Eaid}'";
         $result = $this->conn->query($select);
@@ -65,7 +114,8 @@ class EmployeAdminController {
         return $array;
     }
 
-    public function UpdateEmployeRecord($post) {
+    public function UpdateEmployeRecord($post)
+    {
         $employe_id = $_POST['Eaid'];
         $name = $_POST['edit_name'];
         $email = $_POST['edit_email'];
@@ -91,7 +141,8 @@ class EmployeAdminController {
         }
     }
 
-    public function EmployeDelete($post) {
+    public function EmployeDelete($post)
+    {
         $Daid = $_POST['Daid'];
         $Delete = "DELETE FROM `employes` WHERE `id`='{$Daid}'";
         $result = $this->conn->query($Delete);
@@ -108,7 +159,8 @@ class EmployeAdminController {
 
 
     // update emoloye status controller code 
-    public function UpdateEmployeStatus($post) {
+    public function UpdateEmployeStatus($post)
+    {
         $employeId = $_POST['employeId'];
         $status = $_POST['status'];
 

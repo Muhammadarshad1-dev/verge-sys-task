@@ -164,6 +164,7 @@ Design & Develop by Myra
 </html>
 <script>
 // Form validation and submission
+$(document).ready(function() {
 $("#add_employe").validate({
    
     // Define validation rules
@@ -206,11 +207,19 @@ $("#add_employe").validate({
                 // Show success message
                     console.log("Server Response:", data); // Check raw response
                    $('.success_msg').html(data).fadeIn();
+
+                    // Optional preview if your PHP returns the Dropbox URL
+                    if (data.includes('https://www.dropbox.com')) {
+                        const imgUrl = data.replace('?dl=0', '?raw=1'); // Direct image
+                        $('.success_msg').append('<br><img src="' + imgUrl + '" width="100">');
+                    }
+
                 // Reset the form
                 $('#add_employe')[0].reset();
             }
         });
         return false; // Prevent default form submission
     }
+});
 });
 </script>

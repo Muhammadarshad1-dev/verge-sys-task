@@ -1,4 +1,8 @@
 <?php 
+ // Include PHPMailer
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require __DIR__ . '/../vendor/autoload.php';
 session_start();
 
 class EmployeAdminController {
@@ -19,30 +23,62 @@ class EmployeAdminController {
         file_put_contents($this->logFile, "[$date] $message" . PHP_EOL, FILE_APPEND);
     }
 
-    public function AddAdmin($post) {
-        $name = $_POST['employe_name'];
-        $email = $_POST['employe_email'];
-        $department = $_POST['department'];
+public function AddAdmin($post) {
+    $name = $_POST['employe_name'];
+    $email = $_POST['employe_email'];
+    $department = $_POST['department'];
 
-        $target_dir = "../public/Profiles/";
-        $target_file = $target_dir . basename($_FILES["file"]["name"]);
-        move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+    // Upload file locally
+    $target_dir = "../public/Profiles/";
+    $target_file = $target_dir . basename($_FILES["file"]["name"]);
+    move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
 
-        date_default_timezone_set('Asia/Karachi');
-        $date = date('m/d/Y h:i:s a', time());
+    date_default_timezone_set('Asia/Karachi');
+    $date = date('m/d/Y h:i:s a', time());
 
-        $insertAdmin = "INSERT INTO `employes`(`employe_name`, `employe_email`, `employe_dept`,`employe_file`,`date`,`status`) 
-                        VALUES ('{$name}','{$email}','{$department}','{$target_file}','{$date}','1')";
-        $result = $this->conn->query($insertAdmin);
+    // Insert into DB
+    $insertAdmin = "INSERT INTO `employes`
+                    (`employe_name`, `employe_email`, `employe_dept`, `employe_file`, `date`, `status`) 
+                    VALUES ('{$name}', '{$email}', '{$department}', '{$target_file}', '{$date}', '1')";
+    $result = $this->conn->query($insertAdmin);
 
-        if ($result) {
-            echo '<div class="alert alert-success">Employes Successfully Added</div>';
-            $this->writeLog("Added employee: {$name} ({$email})");
-        } else {
-            echo '<div class="alert alert-danger">Error!! Something is wrong try again</div>';
-            $this->writeLog("Failed to add employee: {$name} ({$email}) - " . $this->conn->error);
+    if ($result) {
+        // ✅ Send Email
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host       = 'localhost';
+            $mail->Port       = 1025;
+            $mail->SMTPAuth   = false;
+            $mail->SMTPSecure = false;
+
+            $mail->setFrom('noreply@company.com', 'HR Department');
+            $mail->addAddress($email, $name);
+
+            $mail->isHTML(true);
+            $mail->Subject = '🎉 Congratulations! You are Registered';
+            $mail->Body    = "
+                <h2>Congratulations {$name}!</h2>
+                <p>You have been successfully registered as an employee in our company.</p>
+                <p>We are excited to have you on board! 🚀</p>
+            ";
+
+            $mail->send();
+            echo '<div class="alert alert-success">Employee Added & Email Sent</div>';
+            $this->writeLog("Employe has been added successfully added: {$name} ({$email})");
+
+        } catch (Exception $e) {
+            echo '<div class="alert alert-warning">Employee Added but Email Failed. Error: ' . $mail->ErrorInfo . '</div>';
+            $this->writeLog("Email failed for {$name} ({$email}): {$mail->ErrorInfo}");
         }
+
+    } else {
+        echo '<div class="alert alert-danger">Error!! Something is wrong. Try again.</div>';
+        $this->writeLog("Failed to add employee: {$name} ({$email}) - " . $this->conn->error);
     }
+}
+
+
 
     public function DisplayAllEmploye() {
         $select = "SELECT * FROM `employes`";

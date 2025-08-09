@@ -31,7 +31,31 @@ For local email testing, **MailHog** is integrated to capture outgoing mails wit
 
 
   **DATABASE TABLE COLUMS**
-  id, employe_name, employe_email, employe_dept, employe_file, date, status
+   CREATE TABLE `employes` (
+  `id` bigint(222) UNSIGNED NOT NULL,
+  `employe_name` varchar(222) DEFAULT NULL,
+  `employe_email` varchar(222) DEFAULT NULL,
+  `employe_dept` varchar(222) DEFAULT NULL,
+  `employe_file` varchar(222) DEFAULT NULL,
+  `date` varchar(222) DEFAULT NULL,
+  `status` varchar(222) DEFAULT '0'
+  )
+
+
+-- USERS DATABASE TABLE ---
+  CREATE TABLE `users` (
+  `u_id` int(11) NOT NULL,
+  `u_fullname` varchar(200) DEFAULT NULL,
+  `u_username` varchar(200) DEFAULT NULL,
+  `u_email` varchar(200) DEFAULT NULL,
+  `u_password` varchar(200) DEFAULT NULL,
+  `u_account_type` varchar(200) DEFAULT NULL,
+  `u_created_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) 
+
+
+INSERT INTO `users` (`u_id`, `u_fullname`, `u_username`, `u_email`, `u_password`, `u_account_type`,`u_created_date`) VALUES
+(6, 'admin', 'admin', 'admin123@admin.com', '123456', 'user_profile','2025-08-09 08:11:30');
 
 
 

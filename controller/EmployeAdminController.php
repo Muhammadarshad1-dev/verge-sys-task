@@ -64,7 +64,7 @@ public function AddAdmin($post) {
             ";
 
             $mail->send();
-            echo '<div class="alert alert-success">Employee Added & Email Sent</div>';
+            echo '<div class="alert alert-success">Employe has been added successfully added & Email Sent</div>';
             $this->writeLog("Employe has been added successfully added: {$name} ({$email})");
 
         } catch (Exception $e) {
